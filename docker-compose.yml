@@ -1,0 +1,72 @@
+###############################################################################
+#                          Generated on phpdocker.io                          #
+###############################################################################
+version: "3.1"
+services:
+
+    memcached:
+      image: memcached:alpine
+      container_name: phpdev-memcached
+
+    mailhog:
+      image: mailhog/mailhog:latest
+      container_name: phpdev-mailhog
+      ports:
+        - "1026:8025"
+
+    redis:
+      image: redis:alpine
+      container_name: phpdev-redis
+
+    mariadb:
+      image: mariadb:10.1
+      container_name: phpdev-mariadb
+      working_dir: /application
+      environment:
+        - MYSQL_ROOT_PASSWORD=root
+        - MYSQL_DATABASE=secret
+        - MYSQL_USER=secret
+        - MYSQL_PASSWORD=secret
+
+    postgres:
+      image: postgres:9.6-alpine
+      container_name: phpdev-postgres
+      working_dir: /application
+      environment:
+        - POSTGRES_USER=root
+        - POSTGRES_PASSWORD=root
+        - POSTGRES_DB=secret
+
+    elasticsearch:
+      image: elasticsearch:5.3-alpine
+      container_name: phpdev-elasticsearch
+
+    webserver:
+      image: nginx:alpine
+      container_name: phpdev-webserver
+      working_dir: /application
+      volumes:
+          - .:/application
+          - ./phpdocker/nginx/nginx.conf:/etc/nginx/conf.d/default.conf
+      ports:
+       - "1025:80"
+      links:
+       - php-fpm
+
+    php-fpm:
+      build:
+        context: .
+        dockerfile: phpdocker/php-fpm/Dockerfile
+      container_name: phpdev-php-fpm
+      working_dir: /application
+      volumes:
+        - .:/application
+        - ./phpdocker/php-fpm/php-ini-overrides.ini:/etc/php/7.1/fpm/conf.d/99-overrides.ini
+
+      links:
+        - memcached
+        - mailhog
+        - mariadb
+        - postgres
+        - redis
+        - elasticsearch
