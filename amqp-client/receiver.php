@@ -1,6 +1,6 @@
 <?php
 
-require_once dirname(__DIR__) . '/expressive-app/vendor/autoload.php';
+require_once dirname(__DIR__) . '/core-app/vendor/autoload.php';
 
 use PhpAmqpLib\Connection\AMQPStreamConnection;
 

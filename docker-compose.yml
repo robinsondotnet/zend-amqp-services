@@ -62,7 +62,8 @@ services:
       volumes:
         - .:/application
         - ./phpdocker/php-fpm/php-ini-overrides.ini:/etc/php/7.1/fpm/conf.d/99-overrides.ini
-
+      ports:
+        - "1027:81"
       links:
         - memcached
         - mailhog
@@ -70,4 +71,13 @@ services:
         - postgres
         - redis
         - elasticsearch
-
+        - rabbit1
+    rabbit1:
+      image: rabbitmq:3-management
+      hostname: "rabbit1"
+      working_dir: /application
+      ports:
+        - "15673:15672"
+        - "5673:5672"
+      labels:
+        NAME: "rabbitmq1"
